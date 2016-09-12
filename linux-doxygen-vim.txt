@@ -1,0 +1,111 @@
+﻿Linux下使用doxygen+vim生成程序文档的方法
+1.安装 doxygen
+有两种获得 doxygen 的方法。可以下载预编译的可执行文件，也可以从 SVN 存储库下载源代码并自己编译。清单 1 演示的是后一种方法。
+清单 1. 安装和构建 doxygen 源代码
+bash-2.05$svn  co  https://doxygen.svn.sourceforge.net/svnroot/doxygen/trunk doxygen-svn
+bash-2.05$ cd doxygen-svn
+bash-2.05$ ./configure
+bash-2.05$ make
+bash-2.05$ make install
+
+2. 安装graphviz 软件包
+yum install graphviz
+
+3.使用 doxygen 生成文档
+使用 doxygen 生成源代码的文档需要执行三个步骤:
+清单 2. 生成默认的配置文件
+bash-2.05b$ doxygen -g
+这个命令在当前目录中生成一个可编辑的配置文件Doxyfile。可以改变这个文件名，在这种情况下，应该调用 doxygen -g <user-specified file name>
+编辑配置文件
+配置文件采用 <TAGNAME> = <VALUE> 这样的结构，与 Make 文件格式相似。下面是最重要的标记：
+# 项目名称，将作为于所生成的程序文档首页标题
+PROJECT_NAME        = “Test”
+# 文档版本号，可对应于项目版本号，譬如 svn、cvs 所生成的项目版本号
+PROJECT_NUMBER      = "1.0.0”
+# 这个目录是放置生成的文档文件的位置。如果提供一个不存在的目录名，doxygen 会以这个名称创建具有适当用户权限的目录。
+OUTPUT_DIRECTORY    =  doc/
+# 程序文档语言环境
+OUTPUT_LANGUAGE     = Chinese
+# 如果是制作 C 程序文档，该选项必须设为 YES，否则默认生成 C++ 文档格式
+OPTIMIZE_OUTPUT_FOR_C  = YES
+# 对于使用 typedef 定义的结构体、枚举、联合等数据类型，只按照 typedef 定义的类型名进行文档化
+TYPEDEF_HIDES_STRUCT   = YES
+# 在 C++ 程序文档中，该值可以设置为 NO，而在 C 程序文档中，由于 C 语言没有所谓的域/名字空间这样的概念，所以此处设置为 YES
+HIDE_SCOPE_NAMES       = YES
+# 让 doxygen 静悄悄地为你生成文档，只有出现警告或错误时，才在终端输出提示信息
+QUIET   = YES
+# 在默认情况下，doxygen 会搜索具有典型 C/C++ 扩展名的文件，比如 .c、.cc、.cpp、.h 和 .hpp。如果 <FILE_PATTERNS> 标记没有相关联的值，doxygen 就会这样做。如果源代码文件采用不同的命名约定，就应该相应地更新这个标记。例如，如果项目使用 .c86 作为 C 文件扩展名，就应该在 <FILE_PATTERNS> 标记中添加这个扩展名。为空即可
+FILE_PATTERNS          = 
+# 递归遍历当前目录的子目录，寻找被文档化的程序源文件
+RECURSIVE              = YES
+# 示例程序目录，填文件路径
+EXAMPLE_PATH           = example/
+# 示例程序的头文档 (.h 文件) 与实现文档 (.c 文件) 都作为程序文档化对象,为空
+EXAMPLE_PATTERNS       = 
+# 递归遍历示例程序目录的子目录，寻找被文档化的程序源文件
+EXAMPLE_RECURSIVE      = YES
+#这个标记告诉 doxygen，即使各个类或函数没有文档，也要提取信息。必须把这个标记设置为 Yes。
+EXTRACT_ALL = yes
+#把这个标记设置为 Yes。否则，文档不包含类的私有数据成员。
+EXTRACT_PRIVATE = yes
+#把这个标记设置为 Yes。否则，文档不包含文件的静态成员（函数和变量）。
+EXTRACT_STATIC = yes
+#在这里，doxygen 会从这两个目录读取 C/C++ 源代码。如果项目只有一个源代码根目录，其中有多个子目录，那么只需指定根目录并把 <RECURSIVE> 标记设置为 Yes。
+INPUT = /home/user1/project/kernel  /home/user1/project/memory
+# 允许程序文档中显示本文档化的函数相互调用关系
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+REFERENCES_LINK_SOURCE = YES
+# 在程序文档中允许以图例形式显示函数调用关系，前提是你已经安装了 graphviz 软件包
+HAVE_DOT              = YES
+CALL_GRAPH            = YES
+CALLER_GRAPH          = YES
+#让doxygen从配置文件所在的文件夹开始，递归地搜索所有的子目录及源文件
+RECURSIVE = YES  
+#在最后生成的文档中，把所有的源代码包含在其中
+SOURCE BROWSER = YES
+$这会在HTML文档中，添加一个侧边栏，并以树状结构显示包、类、接口等的关系
+GENERATE TREEVIEW ＝ ALL
+
+4.运行 doxygen
+在 shell 提示下输入 doxygen Doxyfile（或者已为配置文件选择的其他文件名）运行 doxygen。在最终生成 Hypertext Markup Language（HTML）和 Latex 格式（默认）的文档
+
+5.安装下载 doxygen的 vim 插件
+    http://www.vim.org/scripts/script.php?script_id=987
+将下载的插件安装到$VIMRUNTIME/plugin目录下，例如(vim的版本为7.2)：
+    # cp DoxygenToolkit.vim /usr/share/vim/vim72/plugin/
+之后，需要在VIM的配置文件中(/etc/vimrc)为doxygentoolkit这个插件配置一些全局变量：
+let g:doxygenToolkit_authorName="your name"
+let g:doxygenToolkit_briefTag_funcName="yes"
+（在DoxygenToolkit.vim中举了一一些例子如何在.vimrc中添加配置）
+这样，你就可以通过在vim中输入：DoxAuthor，Dox，Doxb等几个命令来完成doxygen风格的文档了。当然，你可以用VIM的map功能来绑定这几个命令。我通常采用以下绑定：
+map <F3>a :DoxAuthor
+map <F3>f :Dox
+map <F3>b :DoxBlock
+map <F3>c O/** */<Left><Left>
+
+6.添加Doxygen的注释
+命令 :Dox    
+    在添加注释时，最常用的是:Dox，而每个文件同时也需要:DoxAuthor来添加文件头。
+    使用:Dox命令来为一个函数添加注释十分简单：
+
+• 把光标移动到函数声明或者定义所在行(函数原型所在行)，
+• 执行:Dox。
+• Doxygen会自动解析你的函数原型，并将相应的参数和返回值列出来。
+例如，当你对int invoke(int a, int b, int operation=0)添加注释时，Dox将生成如下代码
+/**
+ * @brief invoke
+ *
+ * @param a
+ * @param b
+ * @param operation
+ *
+ * @return
+ */
+并将光标设知道invoke后面，方便你输入函数的简单描述。
+
+命令 :DoxAuthor
+   DoxAuthor则会自动将文件名，作者，时间等关键字自动填好，十分方便。
+
+当然，你也可以按照自己的配置来修改doxygenToolkit.vim。
+

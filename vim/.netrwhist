@@ -1,0 +1,6 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =4
+let g:netrw_dirhist_1='/root/workdir/workfile/20140908'
+let g:netrw_dirhist_2='/root/workdir/workfile/20140908/codesmtp_nolog'
+let g:netrw_dirhist_3='/root/workdir/workfile/20140908/codesmtp_log'
+let g:netrw_dirhist_4='/root'
