@@ -1,2 +1,8 @@
 # vimconfig
 vim configure file include .vim and vimrc
+
+install 
+
+./install.sh
+
+ok have fun
